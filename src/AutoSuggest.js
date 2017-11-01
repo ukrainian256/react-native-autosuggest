@@ -30,7 +30,7 @@ export default class AutoSuggest extends Component {
     rowWrapperStyles: PropTypes.object,
     textInputStyles: PropTypes.object,
     terms: PropTypes.array
-
+    textInputComponent: PropTypes.element
   }
 
   static defaultProps = {
@@ -136,22 +136,21 @@ export default class AutoSuggest extends Component {
     }
     return styleObj
   }
-  render () {
+
+  getTextInputComponent(props) {
+
+    if(props.textInputComponent) {
+      return props.textInputComponent;
+    }
+
     const {
       otherTextInputProps,
       placeholder,
       placeholderTextColor,
-      clearBtn,
-      clearBtnVisibility,
-      onChangeTextDebounce,
-      onItemPress
+      onChangeTextDebounce
     } = this.props
-    return (
-      <View style={this.getCombinedStyles('containerStyles')}>
-      <View
-      ref="TIContainer"
-      style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-          <TextInput
+
+    return <TextInput
               {...otherTextInputProps}
               placeholderTextColor={placeholderTextColor}
               ref="TI"
@@ -162,9 +161,30 @@ export default class AutoSuggest extends Component {
                 debounce(onChangeTextDebounce, this.props.onChangeText(el))
               }}
               placeholder={placeholder}
-              style={this.getCombinedStyles('textInputStyles')}
-              />
+              style={this.getCombinedStyles('textInputStyles')}/>
 
+  }
+
+  render () {
+    const {
+      otherTextInputProps,
+      placeholder,
+      placeholderTextColor,
+      clearBtn,
+      clearBtnVisibility,
+      onChangeTextDebounce,
+      onItemPress
+    } = this.props
+
+    const textInputComponent = getTextInputComponent(this.props);
+
+    return (
+      <View style={this.getCombinedStyles('containerStyles')}>
+      <View
+      ref="TIContainer"
+      style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+            {textInputComponent}
+        
             { clearBtn // for if the user just wants the default clearBtn
               ? <TouchableOpacity onPress={() => this.clearInputAndTerms()}>
                 { clearBtn }
